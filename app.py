@@ -18,6 +18,9 @@ if not SARVAM_API_KEY:
     print("❌ SARVAM_API_KEY missing")
 
 
+
+
+
 #get-chatbot-response
 def get_ai_response(query, thread_id="default", page_name="pfa"):
     url = f"https://backendnwr.azurewebsites.net/api/get-final-result"
@@ -94,6 +97,11 @@ def transcribe():
         transcript = transcribe_audio_batch(audio_base64file)
 
         print("transcript:", transcript)
+        if "create task" in transcript.lower():
+            return jsonify({
+                "status": "success",
+                "transcript": transcript
+            })
         chat_response=get_ai_response(transcript)
         response_json=chat_response.json()
         saar_response=response_json["data"]["reply"]
