@@ -6,7 +6,7 @@ import requests
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
-from flask_cors import CORS
+# from flask_cors import CORS
 
 
 
