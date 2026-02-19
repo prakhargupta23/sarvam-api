@@ -1,9 +1,17 @@
 import os
+import json
 import base64
 import traceback
 import requests
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+
+from flask_cors import CORS
+
+
+
+
+
 
 # -----------------------------------
 # Load ENV
@@ -11,11 +19,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:3000"])
 
 SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
 
 if not SARVAM_API_KEY:
     print("❌ SARVAM_API_KEY missing")
+
+
+
+@app.route("/", methods=["GET"])
+def send_response():
+    return "Connection Successful",200
 
 
 
@@ -73,6 +88,40 @@ def transcribe_audio_batch(audio_base64: str):
 
     return result.get("transcript", "")
 
+#text to speech conversion
+def text_to_speech_sarvam(text: str) -> bytes:
+    """
+    Converts text to speech using Sarvam TTS API.
+    Returns raw audio bytes.
+    """
+
+    url = "https://api.sarvam.ai/text-to-speech"
+
+    headers = {
+        "api-subscription-key": SARVAM_API_KEY,
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "bulbul:v3",      # ✅ valid model
+        "text": text,
+        "language_code": "en-IN",
+        "speaker": "ritu",      # ✅ valid speaker
+        "format": "mp3"
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload
+    )
+
+    if response.status_code != 200:
+        raise Exception(f"TTS Error: {response.text}")
+
+    return response.content  # raw audio bytes
+
+
 
 
 # -----------------------------------
@@ -84,12 +133,14 @@ def transcribe():
 
     try:
         data = request.get_json()
+        # print("data:",data)
 
         if not data or "audio_base64" not in data:
             return jsonify({"error": "Missing 'audio_base64' field"}), 400
 
         audio_base64file = data["audio_base64"]
         print("preview:", audio_base64file[:10])
+        request_source=data["request_source"] or "whatsapp"
 
         # Validate base64
         base64.b64decode(audio_base64file, validate=True)
@@ -106,6 +157,18 @@ def transcribe():
         response_json=chat_response.json()
         saar_response=response_json["data"]["reply"]
         print("chat_response:", saar_response)
+
+        if request_source == "portal":
+            audio_bytes = text_to_speech_sarvam(saar_response)
+            audio_json = json.loads(audio_bytes)
+            print("audio_bytes:", audio_json["audios"])
+            audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+            return jsonify({
+                "status": "success",
+                "transcript": saar_response,
+                "audio_base64": audio_base64
+            })
+
 
         return jsonify({
             "status": "success",
