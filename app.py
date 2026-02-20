@@ -6,7 +6,7 @@ import requests
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
-# from flask_cors import CORS
+from flask_cors import CORS
 
 
 
@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-# CORS(app, origins=["http://localhost:3000"])
+CORS(app)
 
 SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
 
