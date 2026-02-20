@@ -5,6 +5,7 @@ import traceback
 import requests
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from sarvamai import SarvamAI
 
 from flask_cors import CORS
 
@@ -19,7 +20,7 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000"])
+CORS(app)
 
 SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
 
@@ -89,37 +90,26 @@ def transcribe_audio_batch(audio_base64: str):
     return result.get("transcript", "")
 
 #text to speech conversion
-def text_to_speech_sarvam(text: str) -> bytes:
-    """
-    Converts text to speech using Sarvam TTS API.
-    Returns raw audio bytes.
-    """
-
-    url = "https://api.sarvam.ai/text-to-speech"
-
-    headers = {
-        "api-subscription-key": SARVAM_API_KEY,
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": "bulbul:v3",      # ✅ valid model
-        "text": text,
-        "language_code": "en-IN",
-        "speaker": "ritu",      # ✅ valid speaker
-        "format": "mp3"
-    }
-
-    response = requests.post(
-        url,
-        headers=headers,
-        json=payload
+def text_to_speech_sarvam(text: str) -> str:
+    client = SarvamAI(
+        api_subscription_key=SARVAM_API_KEY,
     )
 
-    if response.status_code != 200:
-        raise Exception(f"TTS Error: {response.text}")
+    response = client.text_to_speech.convert(
+        text=text,
+        target_language_code="hi-IN",
+        speaker="shubh",
+        pace=1.1,
+        speech_sample_rate=22050,
+        enable_preprocessing=True,
+        model="bulbul:v3"
+    )
 
-    return response.content  # raw audio bytes
+    # Extract base64 audio from response
+    if not response.audios:
+        raise Exception("No audio returned from Sarvam")
+
+    return response.audios[0]   # Already base64
 
 
 
@@ -160,13 +150,15 @@ def transcribe():
 
         if request_source == "portal":
             audio_bytes = text_to_speech_sarvam(saar_response)
-            audio_json = json.loads(audio_bytes)
-            print("audio_bytes:", audio_json["audios"])
-            audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+            # audio_json = json.loads(audio_bytes)
+            # print("audio_bytes:", audio_json["audios"])
+
+            #audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+            print("audio_base64:", audio_bytes[:10])
             return jsonify({
                 "status": "success",
                 "transcript": saar_response,
-                "audio_base64": audio_base64
+                "audio_base64": audio_bytes
             })
 
 
