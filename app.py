@@ -20,7 +20,15 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    origins=[
+        "http://localhost:3000",
+        "https://pfanewfrontend-abhhaegyfrdvfdd2.centralindia-01.azurewebsites.net",
+        "https://nwrwhatsapp-ekhmbrcqhfdgd0cv.centralindia-01.azurewebsites.net"
+        
+    ]
+)
 
 SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
 
