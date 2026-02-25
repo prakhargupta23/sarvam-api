@@ -121,6 +121,64 @@ def text_to_speech_sarvam(text: str) -> str:
 
 
 
+@app.route("/whatsapp", methods=["POST"])
+def transcribe():
+    print("request received")
+
+    try:
+        data = request.get_json()
+        # print("data:",data)
+
+        if not data or "audio_base64" not in data:
+            return jsonify({"error": "Missing 'audio_base64' field"}), 400
+
+        audio_base64file = data["audio_base64"]
+        print("preview:", audio_base64file[:10])
+        request_source=data["request_source"] or "whatsapp"
+
+        # Validate base64
+        base64.b64decode(audio_base64file, validate=True)
+
+        transcript = transcribe_audio_batch(audio_base64file)
+
+        print("transcript:", transcript)
+        # if "create task" in transcript.lower():
+        #     return jsonify({
+        #         "status": "success",
+        #         "transcript": transcript
+        #     })
+        # chat_response=get_ai_response(transcript)
+        # response_json=chat_response.json()
+        # saar_response=response_json["data"]["reply"]
+        # print("chat_response:", saar_response)
+
+        # if request_source == "portal":
+        #     audio_bytes = text_to_speech_sarvam(saar_response)
+            # audio_json = json.loads(audio_bytes)
+            # print("audio_bytes:", audio_json["audios"])
+
+            #audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+            # print("audio_base64:", audio_bytes[:10])
+            # return jsonify({
+            #     "status": "success",
+            #     "transcript": saar_response,
+            #     "audio_base64": audio_bytes
+            # })
+
+
+        return jsonify({
+            "status": "success",
+            "transcript": transcript
+        })
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+
 
 # -----------------------------------
 # API Endpoint
