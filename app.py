@@ -122,7 +122,7 @@ def text_to_speech_sarvam(text: str) -> str:
 
 
 @app.route("/whatsapp", methods=["POST"])
-def transcribe():
+def whatsapp_transcribe():
     print("request received")
 
     try:
