@@ -27,7 +27,8 @@ CORS(
         "https://pfanewfrontend-abhhaegyfrdvfdd2.centralindia-01.azurewebsites.net",
         "https://nwrwhatsapp-ekhmbrcqhfdgd0cv.centralindia-01.azurewebsites.net"
         "http://nwr-whatsapp-api-bqfadsfzc2ergzcx.canadacentral-01.azurewebsites.net",
-        "https://foamiest-yuriko-unapparently.ngrok-free.dev"
+        "https://foamiest-yuriko-unapparently.ngrok-free.dev",
+        "https://nwr.pfa-saar.degreemaster.ai"
         
     ]
 )
