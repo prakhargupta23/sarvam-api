@@ -53,7 +53,7 @@ def get_ai_response(query, thread_id="default", page_name="pfa"):
     url = f"https://geminiragagent.azurewebsites.net/ask-whatsapp"
     params = {"pageName": page_name}
     payload = {
-        "query": query,
+        "question": query,
     }
     if thread_id and thread_id != "default":
         payload["threadId"] = thread_id
@@ -214,7 +214,7 @@ def transcribe():
             })
         chat_response=get_ai_response(transcript)
         response_json=chat_response.json()
-        saar_response=response_json["data"]["reply"]
+        saar_response=response_json["answer"]
         print("chat_response:", saar_response)
 
         if request_source == "portal":
