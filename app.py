@@ -109,7 +109,7 @@ def text_to_speech_sarvam(text: str) -> str:
     response = client.text_to_speech.convert(
         text=text,
         target_language_code="hi-IN",
-        speaker="shubh",
+        speaker="priya",
         pace=1.1,
         speech_sample_rate=22050,
         enable_preprocessing=True,
