@@ -50,7 +50,7 @@ def send_response():
 
 #get-chatbot-response
 def get_ai_response(query, thread_id="default", page_name="pfa"):
-    url = f"https://geminiragagent.azurewebsites.net/ask-whatsapp"
+    url = f"https://geminiragagent.azurewebsites.net/ask-voice"
     params = {"pageName": page_name}
     payload = {
         "question": query,
