@@ -106,6 +106,14 @@ def text_to_speech_sarvam(text: str) -> str:
     client = SarvamAI(
         api_subscription_key=SARVAM_API_KEY,
     )
+    let text = "sorry some error occured";
+    try{
+        data = request.get_json()
+        if not data or "text" not in data:
+            return jsonify({"error": "Missing 'text' field"}), 400
+
+        text = data["text"]
+    }
 
     response = client.text_to_speech.convert(
         text=text,
