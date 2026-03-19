@@ -101,6 +101,7 @@ def transcribe_audio_batch(audio_base64: str):
     return result.get("transcript", "")
 
 #text to speech conversion
+@app.route("/text-to-speech", methods=["POST"])
 def text_to_speech_sarvam(text: str) -> str:
     client = SarvamAI(
         api_subscription_key=SARVAM_API_KEY,
