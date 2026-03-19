@@ -102,7 +102,7 @@ def transcribe_audio_batch(audio_base64: str):
 
 #text to speech conversion
 @app.route("/text-to-speech", methods=["POST"])
-def text_to_speech_sarvam(text: str) -> str:
+def speak() -> str:
     client = SarvamAI(
         api_subscription_key=SARVAM_API_KEY,
     )
@@ -131,6 +131,27 @@ def text_to_speech_sarvam(text: str) -> str:
 
     return response.audios[0]   # Already base64
 
+
+def text_to_speech_sarvam(text: str) -> str:
+    client = SarvamAI(
+        api_subscription_key=SARVAM_API_KEY,
+    )
+
+    response = client.text_to_speech.convert(
+        text=text,
+        target_language_code="en-IN",
+        speaker="simran",
+        pace=1.1,
+        speech_sample_rate=22050,
+        enable_preprocessing=True,
+        model="bulbul:v3"
+    )
+
+    # Extract base64 audio from response
+    if not response.audios:
+        raise Exception("No audio returned from Sarvam")
+
+    return response.audios[0]   # Already base64
 
 
 @app.route("/whatsapp", methods=["POST"])
