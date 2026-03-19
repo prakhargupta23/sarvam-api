@@ -1,6 +1,7 @@
 import os
 import json
 import base64
+from typing import Any
 import traceback
 import requests
 from flask import Flask, request, jsonify
@@ -102,19 +103,22 @@ def transcribe_audio_batch(audio_base64: str):
 
 #text to speech conversion
 @app.route("/text-to-speech", methods=["POST"])
-def speak() -> str:
+def speak() -> Any:
+    print("text to speech request received")
     client = SarvamAI(
         api_subscription_key=SARVAM_API_KEY,
     )
-    let text = "sorry some error occured";
-    try{
+    text = "sorry some error occured"
+    print("text:", text)
+    try:
         data = request.get_json()
         if not data or "text" not in data:
             return jsonify({"error": "Missing 'text' field"}), 400
 
         text = data["text"]
-    }
-
+    except Exception:
+        pass
+    print("text:", text)
     response = client.text_to_speech.convert(
         text=text,
         target_language_code="en-IN",
