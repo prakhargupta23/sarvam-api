@@ -29,7 +29,7 @@ CORS(
         "https://nwrwhatsapp-ekhmbrcqhfdgd0cv.centralindia-01.azurewebsites.net"
         "http://nwr-whatsapp-api-bqfadsfzc2ergzcx.canadacentral-01.azurewebsites.net",
         "https://foamiest-yuriko-unapparently.ngrok-free.dev",
-        "https://nwr.pfa-saar.degreemaster.ai"
+        "https://nwr.pfa-saar.degreemaster.ai",
         
     ]
 )
@@ -249,6 +249,10 @@ def transcribe():
         chat_response=get_ai_response(transcript)
         response_json=chat_response.json()
         saar_response=response_json["answer"]
+        print("raw response:", saar_response)
+        saar_response=saar_response.replace("#", "")
+        saar_response=saar_response.replace("--", "")
+        print("removed # and --")
         print("chat_response:", saar_response)
 
         if request_source == "portal":
